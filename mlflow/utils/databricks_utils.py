@@ -16,7 +16,7 @@ def _get_dbutils():
         spark_session = _get_active_spark_session()
         if spark_session and spark_session.conf.get("spark.databricks.service.client.enabled") == "true":
             from pyspark.dbutils import DBUtils
-            return DBUtils(spark)
+            return DBUtils(spark_session)
         else:
             import IPython
 
