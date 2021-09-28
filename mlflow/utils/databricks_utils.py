@@ -13,12 +13,17 @@ _logger = logging.getLogger(__name__)
 
 def _get_dbutils():
     try:
-        import IPython
+        spark_session = _get_active_spark_session()
+        if spark_session and spark_session.conf.get("spark.databricks.service.client.enabled") == "true":
+            from pyspark.dbutils import DBUtils
+            return DBUtils(spark)
+        else:
+            import IPython
 
-        ip_shell = IPython.get_ipython()
-        if ip_shell is None:
-            raise _NoDbutilsError
-        return ip_shell.ns_table["user_global"]["dbutils"]
+            ip_shell = IPython.get_ipython()
+            if ip_shell is None:
+                raise _NoDbutilsError
+            return ip_shell.ns_table["user_global"]["dbutils"]
     except ImportError:
         raise _NoDbutilsError
     except KeyError:
